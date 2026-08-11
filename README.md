@@ -11,8 +11,9 @@ No backend, no build-time content pipeline beyond Vite. Everything runs client-s
   - **Off the Cuff** — pick a category (or "Surprise me" over all 480), spin the reel, then speak against a speech timer.
   - **Deep Research** — spin an ultra-deep topic, run a research timer, then transition to the speech timer when you're ready.
 - **Animated reel** — 4.8 s cubic ease-out spin that always lands on the selected topic; no topic repeats within a session (per pool).
-- **Practice timer** — configurable speech timer (1–10 min) and research timer (1–60 min), with a progress ring and the **What? / So what? / Now what?** speech arc that lights up as time passes.
-- **Settings dialog** — adjust speech and research lengths, mute sound effects; all persisted in `localStorage`.
+- **Practice timer** — configurable speech timer (1–10 min) and research timer (1–60 min), shown as a **votive candle that burns down** (wick-out and flame extinguished at 0:00) alongside the **What? / So what? / Now what?** speech arc that lights up as time passes.
+- **Settings dialog** — adjust speech and research lengths, mute sound effects, and pick a theme; all persisted in `localStorage`.
+- **Liturgical auto-theme** — the accent colour follows the real liturgical season (Advent/Lent violet, Christmas/Easter gold, Ordinary green, red on notable martyr feasts), with a manual override in Settings.
 - **Dark minimal UI** (`#121816`) with Fraunces + Outfit fonts.
 
 ## Getting started
@@ -43,7 +44,8 @@ src/
   data/             Topic content (one file per category + deepResearch.js)
   components/       Reel, TimerOverlay, ModeSwitcher, CategoryPicker, SettingsDialog, CopyButton
   hooks/            useTimer, useSound, useDialog, useFocusRestore
-  App.jsx           Mode/category/settings state
+  App.jsx           Mode/category/settings state + theme application
+  themes.js         Colour palettes + liturgical season calendar
   styles.css        Dark theme + typography
 scripts/
   m5-flow-test.mjs  End-to-end Playwright test for both practice modes + settings
@@ -76,7 +78,7 @@ node -e "Promise.all([import('./src/data/offTheCuff.js'),import('./src/data/deep
 
 - Dialogs trap focus, restore focus on close, and lock background scroll; `Escape` closes them.
 - The reel announces only the settled topic to screen readers (via a visually hidden live region), not the per-frame spin.
-- `prefers-reduced-motion` is respected: the reel lands on the topic immediately instead of animating.
+- `prefers-reduced-motion` is respected: the reel lands on the topic immediately instead of animating, and screen/overlay transitions and the candle flicker are disabled.
 - Keyboard support: arrow keys + Home/End for the mode pills, arrow keys + Escape for the category picker.
 
 ## Notes

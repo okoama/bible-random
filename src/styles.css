@@ -1,3 +1,51 @@
+@property --bg {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #121816;
+}
+
+@property --bg-elev {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #1a211e;
+}
+
+@property --bg-hover {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #222b27;
+}
+
+@property --fg {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #e8eee9;
+}
+
+@property --fg-dim {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #9aa8a0;
+}
+
+@property --accent {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #c9a96a;
+}
+
+@property --border {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #2a342f;
+}
+
+@property --ring-track {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: rgba(255, 255, 255, 0.08);
+}
+
 :root {
   --bg: #121816;
   --bg-elev: #1a211e;
@@ -7,6 +55,15 @@
   --accent: #c9a96a;
   --border: #2a342f;
   --ring-track: rgba(255, 255, 255, 0.08);
+  transition:
+    --bg 0.6s ease,
+    --bg-elev 0.6s ease,
+    --bg-hover 0.6s ease,
+    --fg 0.6s ease,
+    --fg-dim 0.6s ease,
+    --accent 0.6s ease,
+    --border 0.6s ease,
+    --ring-track 0.6s ease;
   font-family: 'Outfit', system-ui, sans-serif;
   color-scheme: dark;
 }
@@ -114,6 +171,7 @@ button {
   background: var(--bg-elev);
   color: var(--fg);
   cursor: pointer;
+  transition: background 0.25s ease, border-color 0.25s ease;
 }
 
 .mode-pill:hover {
@@ -197,6 +255,19 @@ button {
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
   max-height: 320px;
   overflow-y: auto;
+  transform-origin: top center;
+  animation: menu-in 0.18s ease;
+}
+
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .select__option {
@@ -330,6 +401,21 @@ button {
 
 /* Overlay */
 
+.topic-area {
+  animation: screen-in 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes screen-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 .overlay {
   position: fixed;
   inset: 0;
@@ -339,6 +425,16 @@ button {
   place-items: center;
   z-index: 50;
   padding: 24px;
+  animation: overlay-in 0.25s ease;
+}
+
+@keyframes overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .overlay__dialog {
@@ -351,6 +447,18 @@ button {
   text-align: center;
   max-height: 92vh;
   overflow-y: auto;
+  animation: dialog-in 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* Timer */
@@ -370,25 +478,106 @@ button {
   margin-bottom: 24px;
 }
 
-.timer-ring {
-  width: 220px;
+.candle {
+  position: relative;
+  width: 88px;
   height: 220px;
-  border-radius: 50%;
-  background: conic-gradient(var(--accent) calc(var(--p, 100) * 1%), var(--ring-track) 0);
-  display: grid;
-  place-items: center;
-  margin: 0 auto 24px;
+  margin: 0 auto;
 }
 
-.timer-ring__inner {
-  width: 186px;
-  height: 186px;
-  border-radius: 50%;
-  background: var(--bg-elev);
-  display: grid;
-  place-items: center;
-  align-content: center;
-  gap: 4px;
+.candle::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -6px;
+  width: 150px;
+  height: 70px;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at center, rgba(255, 180, 60, 0.22), transparent 65%);
+  pointer-events: none;
+}
+
+.candle[data-out='true']::before {
+  display: none;
+}
+
+.candle__body {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  top: 10px;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  background: #0d100e;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+}
+
+.candle__wax {
+  width: 100%;
+  background: linear-gradient(180deg, #f3ead2 0%, #e4d6b2 100%);
+  box-shadow: inset -6px 0 0 rgba(0, 0, 0, 0.06);
+  transition: height 0.3s linear;
+}
+
+.candle__melt {
+  width: 100%;
+  background: linear-gradient(180deg, #caa86a 0%, #96764a 100%);
+  transition: height 0.3s linear;
+}
+
+.candle__burn {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  transition: bottom 0.3s linear;
+}
+
+.candle__flame {
+  width: 16px;
+  height: 26px;
+  margin: 0 auto;
+  background: radial-gradient(
+    circle at 50% 70%,
+    #fff7d6 0%,
+    #ffd86a 45%,
+    #f2912d 75%,
+    rgba(242, 145, 45, 0) 82%
+  );
+  border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;
+  transform-origin: 50% 100%;
+  animation: candle-flicker 0.4s ease-in-out infinite alternate;
+}
+
+.candle__wick {
+  width: 3px;
+  height: 12px;
+  margin: 0 auto;
+  background: #3a2f1e;
+  border-radius: 2px 2px 0 0;
+}
+
+.candle[data-out='true'] .candle__flame {
+  display: none;
+}
+
+.candle[data-out='true'] .candle__wick {
+  background: #6b6153;
+}
+
+@keyframes candle-flicker {
+  0% {
+    transform: scale(1, 1);
+  }
+  100% {
+    transform: scale(1.08, 1.18) translateY(-2px);
+  }
+}
+
+.timer__readout {
+  text-align: center;
+  margin-top: 28px;
 }
 
 .timer__time {
@@ -484,6 +673,21 @@ button {
   cursor: pointer;
 }
 
+.field__select {
+  background: var(--bg-hover);
+  color: var(--fg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 12px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.field__select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .settings__actions {
   text-align: center;
 }
@@ -503,14 +707,9 @@ button {
     padding: 32px 20px;
   }
 
-  .timer-ring {
-    width: 180px;
+  .candle {
+    width: 70px;
     height: 180px;
-  }
-
-  .timer-ring__inner {
-    width: 152px;
-    height: 152px;
   }
 
   .timer__time {
@@ -519,5 +718,22 @@ button {
 
   .arc {
     flex-wrap: wrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    transition: none;
+  }
+
+  .topic-area,
+  .overlay,
+  .overlay__dialog,
+  .select__menu {
+    animation: none;
+  }
+
+  .candle__flame {
+    animation: none;
   }
 }

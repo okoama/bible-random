@@ -89,6 +89,7 @@ export function TimerOverlay({ mode, topic, settings, sound, onClose }) {
   }
 
   const lit = stage === 'speech' ? arcLit(speechTimer.remaining, speechTimer.total, speechTimer.done) : 0
+  const candleOut = stage === 'speech' && speechTimer.done
 
   return createPortal(
     <div className="overlay">
@@ -101,12 +102,20 @@ export function TimerOverlay({ mode, topic, settings, sound, onClose }) {
         tabIndex={-1}
       >
         <div className="timer__topic">{topic}</div>
-        <div id="timer-phase" className="timer__phase">{phaseLabel}</div>
-        <div className="timer-ring" style={{ '--p': pct }}>
-          <div className="timer-ring__inner">
-            <div className="timer__time">{timeText}</div>
-            <div className="timer__hint">{statusText}</div>
+        <div className="timer__phase" id="timer-phase">{phaseLabel}</div>
+        <div className="candle" data-out={candleOut ? 'true' : 'false'}>
+          <div className="candle__body">
+            <div className="candle__burn" style={{ bottom: `${100 - pct}%` }}>
+              <div className="candle__flame" aria-hidden="true" />
+              <div className="candle__wick" aria-hidden="true" />
+            </div>
+            <div className="candle__wax" style={{ height: `${pct}%` }} />
+            <div className="candle__melt" style={{ height: `${100 - pct}%` }} />
           </div>
+        </div>
+        <div className="timer__readout">
+          <div className="timer__time">{timeText}</div>
+          <div className="timer__hint">{statusText}</div>
         </div>
         {stage === 'ready' && (
           <div className="timer__upnext">Up next: {settings.speech} min to speak.</div>

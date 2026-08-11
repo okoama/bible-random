@@ -8,11 +8,13 @@ import { TopicArea } from './components/TopicArea.jsx'
 import { SettingsDialog } from './components/SettingsDialog.jsx'
 import { useSound } from './hooks/useSound.js'
 import { useFocusRestore } from './hooks/useFocusRestore.js'
+import { applyTheme, resolveTheme } from './themes.js'
 
 const LS_KEYS = {
   speech: 'sacra-doctrina:speech',
   research: 'sacra-doctrina:research',
   muted: 'sacra-doctrina:muted',
+  theme: 'sacra-doctrina:theme',
 }
 
 function loadSettings() {
@@ -31,10 +33,19 @@ function loadSettings() {
       return false
     }
   }
+  const readTheme = () => {
+    try {
+      const v = localStorage.getItem(LS_KEYS.theme)
+      return v === 'auto' || v === null ? 'auto' : v
+    } catch {
+      return 'auto'
+    }
+  }
   return {
     speech: read(LS_KEYS.speech, 1),
     research: read(LS_KEYS.research, 10),
     muted: readMuted(),
+    theme: readTheme(),
   }
 }
 
@@ -59,10 +70,17 @@ export default function App() {
       localStorage.setItem(LS_KEYS.speech, String(settings.speech))
       localStorage.setItem(LS_KEYS.research, String(settings.research))
       localStorage.setItem(LS_KEYS.muted, settings.muted ? '1' : '0')
+      localStorage.setItem(LS_KEYS.theme, settings.theme)
     } catch {
       // Storage unavailable (private mode, quota): settings still work in memory.
     }
   }, [settings])
+
+  const themeId = resolveTheme(settings.theme)
+
+  useEffect(() => {
+    applyTheme(themeId)
+  }, [themeId])
 
   return (
     <main className="app">

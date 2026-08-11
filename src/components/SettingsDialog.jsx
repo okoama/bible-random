@@ -1,5 +1,6 @@
 import { createPortal } from 'react-dom'
 import { useDialog } from '../hooks/useDialog.js'
+import { THEME_IDS, THEME_LABELS } from '../themes.js'
 
 export function SettingsDialog({ open, settings, onOpenChange, onChange }) {
   const dialogRef = useDialog({ open, onClose: () => onOpenChange(false) })
@@ -51,6 +52,24 @@ export function SettingsDialog({ open, settings, onOpenChange, onChange }) {
             onChange={(e) => onChange({ ...settings, muted: e.target.checked })}
           />
           <span>Mute sound effects</span>
+        </label>
+        <label className="field">
+          <span className="field__label">
+            Theme{' '}
+            <em className="field__hint">(auto follows the liturgical season)</em>
+          </span>
+          <select
+            className="field__select"
+            value={settings.theme}
+            onChange={(e) => onChange({ ...settings, theme: e.target.value })}
+          >
+            <option value="auto">Automatic — liturgical season</option>
+            {THEME_IDS.map((id) => (
+              <option key={id} value={id}>
+                {THEME_LABELS[id]}
+              </option>
+            ))}
+          </select>
         </label>
         <div className="settings__actions">
           <button type="button" className="btn btn--primary" onClick={() => onOpenChange(false)}>

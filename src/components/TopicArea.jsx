@@ -39,7 +39,7 @@ export function TopicArea({ pool, mode, categoryId, settings, sound }) {
   }
 
   return (
-    <>
+    <div className="topic-area">
       <Reel
         pool={pool}
         topic={topic}
@@ -68,6 +68,6 @@ export function TopicArea({ pool, mode, categoryId, settings, sound }) {
           onClose={() => setOverlayOpen(false)}
         />
       )}
-    </>
+    </div>
   )
 }
