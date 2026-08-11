@@ -105,7 +105,7 @@ export function TimerOverlay({ mode, topic, settings, sound, onClose }) {
         <div className="timer__phase" id="timer-phase">{phaseLabel}</div>
         <div className="candle" data-out={candleOut ? 'true' : 'false'}>
           <div className="candle__body">
-            <div className="candle__burn" style={{ bottom: `${100 - pct}%` }}>
+            <div className="candle__burn" style={{ bottom: `${pct}%` }}>
               <div className="candle__flame" aria-hidden="true" />
               <div className="candle__wick" aria-hidden="true" />
             </div>
