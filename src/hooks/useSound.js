@@ -6,8 +6,16 @@ function getCtx() {
   if (typeof window === 'undefined') return null
   const Ctor = window.AudioContext || window.webkitAudioContext
   if (!Ctor) return null
-  if (!sharedCtx) sharedCtx = new Ctor()
-  if (sharedCtx.state === 'suspended') sharedCtx.resume()
+  if (!sharedCtx) {
+    try {
+      sharedCtx = new Ctor()
+    } catch {
+      return null
+    }
+  }
+  if (sharedCtx.state === 'suspended') {
+    sharedCtx.resume().catch(() => {})
+  }
   return sharedCtx
 }
 

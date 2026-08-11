@@ -34,6 +34,7 @@ Open the printed local URL (default `http://localhost:5173/`).
 | `npm run build`  | Production build to `dist/`                    |
 | `npm run preview`| Preview the production build                   |
 | `npm run lint`   | ESLint over the project                        |
+| `npm run test:flows` | Run the Playwright flow test (requires a dev server) |
 
 ## Project structure
 
@@ -41,14 +42,42 @@ Open the printed local URL (default `http://localhost:5173/`).
 src/
   data/             Topic content (one file per category + deepResearch.js)
   components/       Reel, TimerOverlay, ModeSwitcher, CategoryPicker, SettingsDialog, CopyButton
-  hooks/            useTimer, useSound, useFocusRestore
+  hooks/            useTimer, useSound, useDialog, useFocusRestore
   App.jsx           Mode/category/settings state
   styles.css        Dark theme + typography
+scripts/
+  m5-flow-test.mjs  End-to-end Playwright test for both practice modes + settings
+```
+
+## Testing
+
+The flow test drives the app in a real browser and checks both practice modes (off-the-cuff speech countdown, deep-research research → ready → speech), the settings dialog, and persistence.
+
+1. Start the dev server: `npm run dev`
+2. Run the test: `npm run test:flows`
+
+It uses the system-installed Chrome. Override the path or URL with environment variables if needed:
+
+```bash
+CHROME_PATH="C:/Path/To/chrome.exe" APP_URL="http://localhost:5173/" npm run test:flows
 ```
 
 ## Content
 
 Topic banks live in `src/data/`. Each category file exports an array of plain topic strings; `offTheCuff.js` groups them by category id, and `topicIndex.js` builds the all-topics index used by "Surprise me". Topics are orthodoxy-respecting research subjects — historically condemned positions appear framed neutrally as subjects of study.
+
+To add topics, edit the relevant category file in `src/data/`. Keep entries unique across the whole data set (a duplicate appears twice in "Surprise me"); a quick check:
+
+```bash
+node -e "Promise.all([import('./src/data/offTheCuff.js'),import('./src/data/deepResearch.js')]).then(([a,b])=>{const all=Object.values(a.offTheCuffTopics).flat().concat(b.deepResearchTopics);console.log(all.length,'topics,',new Set(all).size,'unique')})"
+```
+
+## Accessibility
+
+- Dialogs trap focus, restore focus on close, and lock background scroll; `Escape` closes them.
+- The reel announces only the settled topic to screen readers (via a visually hidden live region), not the per-frame spin.
+- `prefers-reduced-motion` is respected: the reel lands on the topic immediately instead of animating.
+- Keyboard support: arrow keys + Home/End for the mode pills, arrow keys + Escape for the category picker.
 
 ## Notes
 

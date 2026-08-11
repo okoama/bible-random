@@ -1,11 +1,20 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 export function CopyButton({ text, disabled }) {
   const [copied, setCopied] = useState(false)
+  const timeoutRef = useRef(null)
+
+  useEffect(() => {
+    return () => clearTimeout(timeoutRef.current)
+  }, [])
 
   const copy = async () => {
     try {
-      await navigator.clipboard.writeText(text)
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text)
+      } else {
+        throw new Error('clipboard API unavailable')
+      }
     } catch {
       const ta = document.createElement('textarea')
       ta.value = text
@@ -17,7 +26,8 @@ export function CopyButton({ text, disabled }) {
       ta.remove()
     }
     setCopied(true)
-    setTimeout(() => setCopied(false), 1500)
+    clearTimeout(timeoutRef.current)
+    timeoutRef.current = setTimeout(() => setCopied(false), 1500)
   }
 
   return (

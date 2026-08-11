@@ -22,6 +22,8 @@ export function ModeSwitcher({ value, onChange }) {
     let nextIndex
     if (e.key === 'ArrowRight' || e.key === 'ArrowDown') nextIndex = (index + 1) % MODES.length
     else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') nextIndex = (index - 1 + MODES.length) % MODES.length
+    else if (e.key === 'Home') nextIndex = 0
+    else if (e.key === 'End') nextIndex = MODES.length - 1
     else return
     e.preventDefault()
     const next = MODES[nextIndex]

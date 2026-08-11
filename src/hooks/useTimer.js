@@ -7,6 +7,7 @@ export function useTimer(onDone) {
   const [done, setDone] = useState(false)
   const endRef = useRef(0)
   const rafRef = useRef(null)
+  const lastSecRef = useRef(-1)
   const onDoneRef = useRef(onDone)
 
   useEffect(() => {
@@ -17,6 +18,7 @@ export function useTimer(onDone) {
     setTotal(seconds)
     setRemaining(seconds)
     setDone(false)
+    lastSecRef.current = seconds
     endRef.current = performance.now() + seconds * 1000
     setRunning(true)
   }, [])
@@ -30,7 +32,10 @@ export function useTimer(onDone) {
     const frame = () => {
       const msLeft = endRef.current - performance.now()
       const secs = Math.max(0, Math.ceil(msLeft / 1000))
-      setRemaining(secs)
+      if (secs !== lastSecRef.current) {
+        lastSecRef.current = secs
+        setRemaining(secs)
+      }
       if (msLeft <= 0) {
         setRemaining(0)
         setRunning(false)

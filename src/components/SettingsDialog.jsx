@@ -1,18 +1,8 @@
-import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
+import { useDialog } from '../hooks/useDialog.js'
 
 export function SettingsDialog({ open, settings, onOpenChange, onChange }) {
-  const dialogRef = useRef(null)
-
-  useEffect(() => {
-    if (!open) return
-    dialogRef.current?.focus()
-    const onKey = (e) => {
-      if (e.key === 'Escape') onOpenChange(false)
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [open, onOpenChange])
+  const dialogRef = useDialog({ open, onClose: () => onOpenChange(false) })
 
   if (!open) return null
 
@@ -22,11 +12,11 @@ export function SettingsDialog({ open, settings, onOpenChange, onChange }) {
         className="overlay__dialog settings"
         role="dialog"
         aria-modal="true"
-        aria-label="Settings"
+        aria-labelledby="settings-title"
         ref={dialogRef}
         tabIndex={-1}
       >
-        <h2 className="settings__title">Settings</h2>
+        <h2 id="settings-title" className="settings__title">Settings</h2>
         <label className="field">
           <span className="field__label">
             Speech timer &mdash; {settings.speech} min

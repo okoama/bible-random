@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useTimer } from '../hooks/useTimer.js'
+import { useDialog } from '../hooks/useDialog.js'
 
 const ARC = ['What?', 'So what?', 'Now what?']
 
@@ -22,24 +23,12 @@ function fmt(secs) {
 export function TimerOverlay({ mode, topic, settings, sound, onClose }) {
   const isResearchMode = mode === 'deep-research'
   const [stage, setStage] = useState(isResearchMode ? 'research' : 'speech')
-  const dialogRef = useRef(null)
+  const dialogRef = useDialog({ open: true, onClose })
   const speechTimer = useTimer(() => sound.gong())
   const researchTimer = useTimer(() => {
     sound.gong()
     setStage('ready')
   })
-
-  useEffect(() => {
-    dialogRef.current?.focus()
-  }, [])
-
-  useEffect(() => {
-    const onKey = (e) => {
-      if (e.key === 'Escape') onClose()
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [onClose])
 
   const startResearch = () => researchTimer.start(settings.research * 60)
   const finishResearch = () => {
@@ -107,12 +96,12 @@ export function TimerOverlay({ mode, topic, settings, sound, onClose }) {
         className="overlay__dialog timer"
         role="dialog"
         aria-modal="true"
-        aria-label="Practice timer"
+        aria-labelledby="timer-phase"
         ref={dialogRef}
         tabIndex={-1}
       >
         <div className="timer__topic">{topic}</div>
-        <div className="timer__phase">{phaseLabel}</div>
+        <div id="timer-phase" className="timer__phase">{phaseLabel}</div>
         <div className="timer-ring" style={{ '--p': pct }}>
           <div className="timer-ring__inner">
             <div className="timer__time">{timeText}</div>

@@ -17,13 +17,24 @@ const LS_KEYS = {
 
 function loadSettings() {
   const read = (key, fallback) => {
-    const v = Number(localStorage.getItem(key))
-    return Number.isFinite(v) && v > 0 ? v : fallback
+    try {
+      const v = Number(localStorage.getItem(key))
+      return Number.isFinite(v) && v > 0 ? v : fallback
+    } catch {
+      return fallback
+    }
+  }
+  const readMuted = () => {
+    try {
+      return localStorage.getItem(LS_KEYS.muted) === '1'
+    } catch {
+      return false
+    }
   }
   return {
     speech: read(LS_KEYS.speech, 1),
     research: read(LS_KEYS.research, 10),
-    muted: localStorage.getItem(LS_KEYS.muted) === '1',
+    muted: readMuted(),
   }
 }
 
@@ -44,9 +55,13 @@ export default function App() {
   const poolKey = `${mode}:${categoryId}`
 
   useEffect(() => {
-    localStorage.setItem(LS_KEYS.speech, String(settings.speech))
-    localStorage.setItem(LS_KEYS.research, String(settings.research))
-    localStorage.setItem(LS_KEYS.muted, settings.muted ? '1' : '0')
+    try {
+      localStorage.setItem(LS_KEYS.speech, String(settings.speech))
+      localStorage.setItem(LS_KEYS.research, String(settings.research))
+      localStorage.setItem(LS_KEYS.muted, settings.muted ? '1' : '0')
+    } catch {
+      // Storage unavailable (private mode, quota): settings still work in memory.
+    }
   }, [settings])
 
   return (
@@ -56,6 +71,7 @@ export default function App() {
           type="button"
           className="icon-btn"
           aria-label="Settings"
+          aria-haspopup="dialog"
           onClick={() => setSettingsOpen(true)}
         >
           ⚙

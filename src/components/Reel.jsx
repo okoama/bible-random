@@ -9,6 +9,15 @@ export function Reel({ pool, topic, currentCategory, spinning, spinTarget, onLan
   // not restart when those change mid-spin. The landing handler updates them all.
   useEffect(() => {
     if (!spinning || spinTarget == null) return
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches) {
+      const raf = requestAnimationFrame(() => {
+        setDisplay(spinTarget)
+        setHasSpun(true)
+        sound.chime()
+        onLanded()
+      })
+      return () => cancelAnimationFrame(raf)
+    }
     const from = pool.indexOf(topic)
     const to = pool.indexOf(spinTarget)
     const len = pool.length
@@ -47,9 +56,13 @@ export function Reel({ pool, topic, currentCategory, spinning, spinTarget, onLan
   const status = spinning ? 'Drawing…' : hasSpun ? 'Your topic' : 'Ready'
 
   return (
-    <section className="reel" aria-live="polite">
-      <div className="reel__status">{status}</div>
-      <div className="reel__topic">{display || '…'}</div>
+    <section className="reel">
+      <p className="sr-only" aria-live="polite" aria-atomic="true">
+        {status}
+        {!spinning && topic ? `: ${topic}` : ''}
+      </p>
+      <div className="reel__status" aria-hidden="true">{status}</div>
+      <div className="reel__topic" aria-hidden={spinning}>{display || '…'}</div>
       <div className="reel__meta">
         {currentCategory && (
           <span className="reel__category">
